@@ -25,7 +25,9 @@ WALL_THICKNESS = 2; // mm
 BASE_THICKNESS = 2; // mm
 
 CYLINDER_THICKNESS = 2.5; // mm
-CYLINDER_RADIUS = 1.5; // mm
+
+// For M3 screws it must be 1.5 mm + 10% tolerance
+CYLINDER_RADIUS = 1.65; // mm
 
 // tolerances
 X_GAP = 1.25; // mm
@@ -49,6 +51,12 @@ X_SENSOR_LEN = 15; // mm
 Y_SENSOR_LEN = 20; // mm
 X_SENSOR_GAP = 0.5; // mm
 Y_SENSOR_GAP = 0.5; // mm
+
+//------------------------------------------------
+// Screw sizes (M3)
+
+Z_SCREW_LEN = 19; // mm
+Z_SCREW_HEAD_LEN = 3.5; // mm
 
 //------------------------------------------------
 // Actual script
