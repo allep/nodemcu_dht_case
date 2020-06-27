@@ -44,11 +44,16 @@ BOARD_THICKNESS = 1.2;
 BOARD_HEIGHT = 5; // including clearence
 
 // Based on NodeMCU Amica ESP-8266 board.
-SCREW_DISTANCE_Y = 43.4;
-SCREW_DISTANCE_X = 20.7;
+SCREW_DISTANCE_Y = 43.6;
+SCREW_DISTANCE_X = 20.9;
 
-Z_USB_PORT_HEIGHT = BOARD_HEIGHT;
-X_USB_PORT_LEN = 9;
+// Usb size
+// Note: to be quite sure that any USB cable can fit
+// here we create a hole quite large (height > 
+// BOARD_HEIGHT)
+// Adjust it based on your needs.
+Z_USB_PORT_HEIGHT = 7;
+X_USB_PORT_LEN = 11;
 
 //------------------------------------------------
 // DHT22
@@ -65,7 +70,7 @@ Y_SENSOR_DISPLACEMENT = 5;
 // Peg
 SENSOR_PEG_RADIUS = 1.25;
 Y_SENSOR_PEG_DISTANCE = 1.8;
-Z_SENSOR_PEG_HEIGHT = 1.8;
+Z_SENSOR_PEG_HEIGHT = 3.0;
 
 //------------------------------------------------
 // Screw sizes (M3)
