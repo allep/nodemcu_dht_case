@@ -29,14 +29,13 @@ Z_LEN = 21;
 WALL_THICKNESS = 1.2;
 BASE_THICKNESS = 1.2;
 
-CYLINDER_THICKNESS = 1.2;
+CYLINDER_THICKNESS = 0.8;
 
 // For M3 screws it must be 1.5 mm + 5% tolerance
 CYLINDER_RADIUS = 1.575;
 
 // tolerances
-X_GAP = 1.0;
-Y_GAP = 1.0;
+CYLINDER_GAP = 1.0;
 
 //------------------------------------------------
 // Board size
@@ -79,11 +78,32 @@ Z_SCREW_LEN = 19;
 Z_SCREW_HEAD_LEN = 3.5;
 
 //------------------------------------------------
+// Modules
+
+module corner(radius, height, thickness, gap, position, plane_rotation) {
+    ext_r = radius + thickness;
+    
+    translate(position)
+    rotate([0, 0, plane_rotation])
+    difference() {
+        union() {
+            cube([ext_r + gap, ext_r + gap, height]);
+            translate([0, - ext_r, 0])
+            cube([ext_r + gap, ext_r, height]);
+            translate([- ext_r, 0, 0])
+            cube([ext_r, ext_r + gap, height]);
+            cylinder(h = height, r = ext_r);
+        }
+        cylinder(h = height, r = radius);
+    }
+}
+
+//------------------------------------------------
 // Actual script
 
 // First compute sizes
-x_len_inner = SCREW_DISTANCE_X + 2*(CYLINDER_RADIUS + CYLINDER_THICKNESS + X_GAP - WALL_THICKNESS);
-y_len_inner = SCREW_DISTANCE_Y + 2*(CYLINDER_RADIUS + CYLINDER_THICKNESS + Y_GAP - WALL_THICKNESS);
+x_len_inner = SCREW_DISTANCE_X + 2*(CYLINDER_RADIUS + CYLINDER_THICKNESS + CYLINDER_GAP - WALL_THICKNESS);
+y_len_inner = SCREW_DISTANCE_Y + 2*(CYLINDER_RADIUS + CYLINDER_THICKNESS + CYLINDER_GAP - WALL_THICKNESS);
 x_len_outer = x_len_inner + 2*WALL_THICKNESS;
 y_len_outer = y_len_inner + 2*WALL_THICKNESS;
 
@@ -105,20 +125,38 @@ difference() {
     cube([X_USB_PORT_LEN, WALL_THICKNESS, Z_USB_PORT_HEIGHT]);
 }
 
-// screw cylinders
-for (j = [0:1]) {
-    for ( i = [0:1] ) {
-        // compute the shift needed
-        shift_x = i*SCREW_DISTANCE_X + CYLINDER_THICKNESS + CYLINDER_RADIUS + X_GAP;
-        shift_y = j*SCREW_DISTANCE_Y + CYLINDER_THICKNESS + CYLINDER_RADIUS + Y_GAP;
-        shift_z = BASE_THICKNESS;
-        translate([shift_x, shift_y, shift_z])
-        difference() {
-            cylinder(h = Z_LEN-BOARD_HEIGHT, r = CYLINDER_RADIUS + CYLINDER_THICKNESS);
-            cylinder(h = Z_LEN-BOARD_HEIGHT, r = CYLINDER_RADIUS);
-        }
-    }
-}
+// Params: radius, height, thickness, gap, position, plane_rotation
+
+shift_x1 = CYLINDER_GAP + CYLINDER_THICKNESS + CYLINDER_RADIUS + WALL_THICKNESS;
+shift_y1 = CYLINDER_GAP + CYLINDER_THICKNESS + CYLINDER_RADIUS + WALL_THICKNESS;
+corner(CYLINDER_RADIUS, Z_LEN-BOARD_HEIGHT, CYLINDER_THICKNESS, CYLINDER_GAP, [shift_x1, shift_y1, BASE_THICKNESS], 180);
+
+shift_x2 = CYLINDER_GAP + CYLINDER_THICKNESS + CYLINDER_RADIUS + WALL_THICKNESS;
+shift_y2 = CYLINDER_GAP + CYLINDER_THICKNESS + CYLINDER_RADIUS + SCREW_DISTANCE_Y - CYLINDER_GAP;
+corner(CYLINDER_RADIUS, Z_LEN-BOARD_HEIGHT, CYLINDER_THICKNESS, CYLINDER_GAP, [shift_x2, shift_y2, BASE_THICKNESS], 90);
+
+shift_x3 = CYLINDER_GAP + CYLINDER_THICKNESS + CYLINDER_RADIUS + SCREW_DISTANCE_X - CYLINDER_GAP;
+shift_y3 = CYLINDER_GAP + CYLINDER_THICKNESS + CYLINDER_RADIUS + WALL_THICKNESS;
+corner(CYLINDER_RADIUS, Z_LEN-BOARD_HEIGHT, CYLINDER_THICKNESS, CYLINDER_GAP, [shift_x3, shift_y3, BASE_THICKNESS], 270);
+
+shift_x4 = CYLINDER_GAP + CYLINDER_THICKNESS + CYLINDER_RADIUS + SCREW_DISTANCE_X - CYLINDER_GAP;
+shift_y4 = CYLINDER_GAP + CYLINDER_THICKNESS + CYLINDER_RADIUS + SCREW_DISTANCE_Y - CYLINDER_GAP;
+corner(CYLINDER_RADIUS, Z_LEN-BOARD_HEIGHT, CYLINDER_THICKNESS, CYLINDER_GAP, [shift_x4, shift_y4, BASE_THICKNESS], 0);
+
+//// screw cylinders
+//for (j = [0:1]) {
+//    for ( i = [0:1] ) {
+//        // compute the shift needed
+//        shift_x = i*SCREW_DISTANCE_X + CYLINDER_THICKNESS + CYLINDER_RADIUS + X_GAP;
+//        shift_y = j*SCREW_DISTANCE_Y + CYLINDER_THICKNESS + CYLINDER_RADIUS + Y_GAP;
+//        shift_z = BASE_THICKNESS;
+//        translate([shift_x, shift_y, shift_z])
+//        difference() {
+//            cylinder(h = Z_LEN-BOARD_HEIGHT, r = CYLINDER_RADIUS + CYLINDER_THICKNESS);
+//            cylinder(h = Z_LEN-BOARD_HEIGHT, r = CYLINDER_RADIUS);
+//        }
+//    }
+//}
 
 // sensor peg
 translate([x_len_outer/2, y_len_outer/2 + Y_SENSOR_LEN/2 + Y_SENSOR_GAP + Y_SENSOR_DISPLACEMENT + Y_SENSOR_PEG_DISTANCE, BASE_THICKNESS])
