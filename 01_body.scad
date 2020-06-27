@@ -87,6 +87,8 @@ y_len_inner = SCREW_DISTANCE_Y + 2*(CYLINDER_RADIUS + CYLINDER_THICKNESS + Y_GAP
 x_len_outer = x_len_inner + 2*WALL_THICKNESS;
 y_len_outer = y_len_inner + 2*WALL_THICKNESS;
 
+echo("Computed X len = ", x_len_outer, " and Y len = ", y_len_outer);
+
 // actual box
 difference() {
     // the box
