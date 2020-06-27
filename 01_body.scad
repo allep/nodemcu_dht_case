@@ -4,6 +4,13 @@
 // author: Alessandro Paganelli 
 // e-mail: alessandro.paganelli@gmail.com
 // github: https://github.com/allep
+// 
+// Description
+// This case is designed to be used with a NodeMCU 
+// Amica ESP-8266 board and a DHT22 temperature
+// and humidity sensor.
+//
+// All sizes are expressed in mm.
 //------------------------------------------------
 
 // Set face number to a sufficiently high number.
@@ -17,46 +24,54 @@ $fn = 30;
 
 // Inner sizes: outer size will be increased by
 // the wall thickness.
-X_LEN = 33; // mm
-Y_LEN = 60; // mm
-Z_LEN = 21; // mm
+Z_LEN = 21;
 
-WALL_THICKNESS = 2; // mm
-BASE_THICKNESS = 2; // mm
+WALL_THICKNESS = 1.2;
+BASE_THICKNESS = 2;
 
-CYLINDER_THICKNESS = 2.5; // mm
+CYLINDER_THICKNESS = 1.2;
 
-// For M3 screws it must be 1.5 mm + 10% tolerance
-CYLINDER_RADIUS = 1.65; // mm
+// For M3 screws it must be 1.5 mm + 5% tolerance
+CYLINDER_RADIUS = 1.575;
 
 // tolerances
-X_GAP = 1.25; // mm
-Y_GAP = 1.25; // mm
+X_GAP = 1.0;
+Y_GAP = 1.0;
 
 //------------------------------------------------
 // Board size
-BOARD_THICKNESS = 2; // mm
-BOARD_HEIGHT = 5; // mm, including clearence
+BOARD_THICKNESS = 1.2;
+BOARD_HEIGHT = 5; // including clearence
 
-SCREW_DISTANCE_Y = 43; // mm
-SCREW_DISTANCE_X = 20; // mm
+// Based on NodeMCU Amica ESP-8266 board.
+SCREW_DISTANCE_Y = 43.4;
+SCREW_DISTANCE_X = 20.7;
 
 Z_USB_PORT_HEIGHT = BOARD_HEIGHT;
-X_USB_PORT_LEN = 9; // mm
+X_USB_PORT_LEN = 9;
 
 //------------------------------------------------
 // DHT22
 
-X_SENSOR_LEN = 15; // mm
-Y_SENSOR_LEN = 20; // mm
-X_SENSOR_GAP = 0.5; // mm
-Y_SENSOR_GAP = 0.5; // mm
+X_SENSOR_LEN = 15;
+Y_SENSOR_LEN = 20;
+X_SENSOR_GAP = 0.5;
+Y_SENSOR_GAP = 0.5;
+
+// Used to keep track of the pins that need some
+// clearance to allow cables to be connected.
+Y_SENSOR_DISPLACEMENT = 5;
+
+// Peg
+SENSOR_PEG_RADIUS = 1.25;
+Y_SENSOR_PEG_DISTANCE = 1.8;
+Z_SENSOR_PEG_HEIGHT = 1.8;
 
 //------------------------------------------------
 // Screw sizes (M3)
 
-Z_SCREW_LEN = 19; // mm
-Z_SCREW_HEAD_LEN = 3.5; // mm
+Z_SCREW_LEN = 19;
+Z_SCREW_HEAD_LEN = 3.5;
 
 //------------------------------------------------
 // Actual script
@@ -76,7 +91,7 @@ difference() {
         cube([x_len_inner, y_len_inner, Z_LEN]);
     }
     // the sensor hole
-    translate([x_len_outer/2 - X_SENSOR_LEN/2 - X_SENSOR_GAP, y_len_outer/2 - Y_SENSOR_LEN/2 - Y_SENSOR_GAP, 0])
+    translate([x_len_outer/2 - X_SENSOR_LEN/2 - X_SENSOR_GAP, y_len_outer/2 - Y_SENSOR_LEN/2 - Y_SENSOR_GAP + Y_SENSOR_DISPLACEMENT, 0])
     cube([X_SENSOR_LEN + 2*X_SENSOR_GAP, Y_SENSOR_LEN + 2*Y_SENSOR_GAP, BASE_THICKNESS]);
     // the usb port hole
     translate([x_len_outer/2 - X_USB_PORT_LEN/2, 0, Z_LEN + BASE_THICKNESS - Z_USB_PORT_HEIGHT])
@@ -97,3 +112,7 @@ for (j = [0:1]) {
         }
     }
 }
+
+// sensor peg
+translate([x_len_outer/2, y_len_outer/2 + Y_SENSOR_LEN/2 + Y_SENSOR_GAP + Y_SENSOR_DISPLACEMENT + Y_SENSOR_PEG_DISTANCE, BASE_THICKNESS])
+cylinder(h = Z_SENSOR_PEG_HEIGHT, r = SENSOR_PEG_RADIUS);
