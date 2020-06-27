@@ -27,7 +27,7 @@ $fn = 30;
 Z_LEN = 21;
 
 WALL_THICKNESS = 1.2;
-BASE_THICKNESS = 2;
+BASE_THICKNESS = 1.2;
 
 CYLINDER_THICKNESS = 1.2;
 
@@ -40,7 +40,7 @@ Y_GAP = 1.0;
 
 //------------------------------------------------
 // Board size
-BOARD_THICKNESS = 1.2;
+BOARD_THICKNESS = 2.0;
 BOARD_HEIGHT = 5; // including clearence
 
 // Based on NodeMCU Amica ESP-8266 board.
