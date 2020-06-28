@@ -90,7 +90,7 @@ Z_SENSOR_STEP_HEIGHT = 1.4;
 
 SCREW_RADIUS = 1.5;
 Z_SCREW_LEN = 30; // used just for simulation
-Z_SCREW_HEAD_LEN = 3.5;
+Z_SCREW_HEAD_LEN = 4.0;
 
 //------------------------------------------------
 // Modules
