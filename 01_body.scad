@@ -17,7 +17,19 @@
 $fn = 30;
 
 //------------------------------------------------
+// Debug mode
+// Set DEBUG_MODE to 1 to simulate the actual 
+// screw positions, to validate the design.
+DEBUG_MODE = 0;
+
+//------------------------------------------------
 // Variables
+
+//------------------------------------------------
+// Pockets
+// Let's increase a little bit pocket sizs in order 
+// to allow for easier simulation.
+POCKET_TOLERANCE = 0.1;
 
 //------------------------------------------------
 // Box
@@ -70,11 +82,14 @@ Y_SENSOR_DISPLACEMENT = 5;
 SENSOR_PEG_RADIUS = 1.25;
 Y_SENSOR_PEG_DISTANCE = 1.8;
 Z_SENSOR_PEG_HEIGHT = 3.0;
+Y_SENSOR_STEP_LEN = 3;
+Z_SENSOR_STEP_HEIGHT = 1.4;
 
 //------------------------------------------------
 // Screw sizes (M3)
 
-Z_SCREW_LEN = 19;
+SCREW_RADIUS = 1.5;
+Z_SCREW_LEN = 30; // used just for simulation
 Z_SCREW_HEAD_LEN = 3.5;
 
 //------------------------------------------------
@@ -94,7 +109,7 @@ module corner(radius, height, thickness, gap, position, plane_rotation) {
             cube([ext_r, ext_r + gap, height]);
             cylinder(h = height, r = ext_r);
         }
-        cylinder(h = height, r = radius);
+        cylinder(h = height + POCKET_TOLERANCE, r = radius);
     }
 }
 
@@ -102,8 +117,9 @@ module corner(radius, height, thickness, gap, position, plane_rotation) {
 // Actual script
 
 // First compute sizes
-x_len_inner = SCREW_DISTANCE_X + 2*(CYLINDER_RADIUS + CYLINDER_THICKNESS + CYLINDER_GAP - WALL_THICKNESS);
-y_len_inner = SCREW_DISTANCE_Y + 2*(CYLINDER_RADIUS + CYLINDER_THICKNESS + CYLINDER_GAP - WALL_THICKNESS);
+
+x_len_inner = SCREW_DISTANCE_X + 2*(CYLINDER_RADIUS + CYLINDER_THICKNESS + CYLINDER_GAP);
+y_len_inner = SCREW_DISTANCE_Y + 2*(CYLINDER_RADIUS + CYLINDER_THICKNESS + CYLINDER_GAP);
 x_len_outer = x_len_inner + 2*WALL_THICKNESS;
 y_len_outer = y_len_inner + 2*WALL_THICKNESS;
 
@@ -115,49 +131,66 @@ difference() {
     difference() {
         cube([x_len_outer, y_len_outer, Z_LEN + BASE_THICKNESS]);
         translate([WALL_THICKNESS, WALL_THICKNESS, BASE_THICKNESS])
-        cube([x_len_inner, y_len_inner, Z_LEN]);
+        cube([x_len_inner, y_len_inner, Z_LEN + POCKET_TOLERANCE]);
     }
     // the sensor hole
-    translate([x_len_outer/2 - X_SENSOR_LEN/2 - X_SENSOR_GAP, y_len_outer/2 - Y_SENSOR_LEN/2 - Y_SENSOR_GAP + Y_SENSOR_DISPLACEMENT, 0])
-    cube([X_SENSOR_LEN + 2*X_SENSOR_GAP, Y_SENSOR_LEN + 2*Y_SENSOR_GAP, BASE_THICKNESS]);
+    translate([x_len_outer/2 - X_SENSOR_LEN/2 - X_SENSOR_GAP, y_len_outer/2 - Y_SENSOR_LEN/2 - Y_SENSOR_GAP + Y_SENSOR_DISPLACEMENT, -POCKET_TOLERANCE])
+    cube([X_SENSOR_LEN + 2*X_SENSOR_GAP, Y_SENSOR_LEN + 2*Y_SENSOR_GAP, BASE_THICKNESS + 2*POCKET_TOLERANCE]);
     // the usb port hole
-    translate([x_len_outer/2 - X_USB_PORT_LEN/2, 0, Z_LEN + BASE_THICKNESS - Z_USB_PORT_HEIGHT])
-    cube([X_USB_PORT_LEN, WALL_THICKNESS, Z_USB_PORT_HEIGHT]);
+    translate([x_len_outer/2 - X_USB_PORT_LEN/2, -POCKET_TOLERANCE, Z_LEN + BASE_THICKNESS - Z_USB_PORT_HEIGHT])
+    cube([X_USB_PORT_LEN, WALL_THICKNESS + 2*POCKET_TOLERANCE, Z_USB_PORT_HEIGHT + POCKET_TOLERANCE]);
 }
 
-// Params: radius, height, thickness, gap, position, plane_rotation
-
+// screw holes
 shift_x1 = CYLINDER_GAP + CYLINDER_THICKNESS + CYLINDER_RADIUS + WALL_THICKNESS;
 shift_y1 = CYLINDER_GAP + CYLINDER_THICKNESS + CYLINDER_RADIUS + WALL_THICKNESS;
 corner(CYLINDER_RADIUS, Z_LEN-BOARD_HEIGHT, CYLINDER_THICKNESS, CYLINDER_GAP, [shift_x1, shift_y1, BASE_THICKNESS], 180);
 
 shift_x2 = CYLINDER_GAP + CYLINDER_THICKNESS + CYLINDER_RADIUS + WALL_THICKNESS;
-shift_y2 = CYLINDER_GAP + CYLINDER_THICKNESS + CYLINDER_RADIUS + SCREW_DISTANCE_Y - CYLINDER_GAP;
+shift_y2 = CYLINDER_GAP + CYLINDER_THICKNESS + CYLINDER_RADIUS + SCREW_DISTANCE_Y + WALL_THICKNESS;
 corner(CYLINDER_RADIUS, Z_LEN-BOARD_HEIGHT, CYLINDER_THICKNESS, CYLINDER_GAP, [shift_x2, shift_y2, BASE_THICKNESS], 90);
 
-shift_x3 = CYLINDER_GAP + CYLINDER_THICKNESS + CYLINDER_RADIUS + SCREW_DISTANCE_X - CYLINDER_GAP;
+shift_x3 = CYLINDER_GAP + CYLINDER_THICKNESS + CYLINDER_RADIUS + SCREW_DISTANCE_X + WALL_THICKNESS;
 shift_y3 = CYLINDER_GAP + CYLINDER_THICKNESS + CYLINDER_RADIUS + WALL_THICKNESS;
 corner(CYLINDER_RADIUS, Z_LEN-BOARD_HEIGHT, CYLINDER_THICKNESS, CYLINDER_GAP, [shift_x3, shift_y3, BASE_THICKNESS], 270);
 
-shift_x4 = CYLINDER_GAP + CYLINDER_THICKNESS + CYLINDER_RADIUS + SCREW_DISTANCE_X - CYLINDER_GAP;
-shift_y4 = CYLINDER_GAP + CYLINDER_THICKNESS + CYLINDER_RADIUS + SCREW_DISTANCE_Y - CYLINDER_GAP;
+shift_x4 = CYLINDER_GAP + CYLINDER_THICKNESS + CYLINDER_RADIUS + SCREW_DISTANCE_X + WALL_THICKNESS;
+shift_y4 = CYLINDER_GAP + CYLINDER_THICKNESS + CYLINDER_RADIUS + SCREW_DISTANCE_Y + WALL_THICKNESS;
 corner(CYLINDER_RADIUS, Z_LEN-BOARD_HEIGHT, CYLINDER_THICKNESS, CYLINDER_GAP, [shift_x4, shift_y4, BASE_THICKNESS], 0);
 
-//// screw cylinders
-//for (j = [0:1]) {
-//    for ( i = [0:1] ) {
-//        // compute the shift needed
-//        shift_x = i*SCREW_DISTANCE_X + CYLINDER_THICKNESS + CYLINDER_RADIUS + X_GAP;
-//        shift_y = j*SCREW_DISTANCE_Y + CYLINDER_THICKNESS + CYLINDER_RADIUS + Y_GAP;
-//        shift_z = BASE_THICKNESS;
-//        translate([shift_x, shift_y, shift_z])
-//        difference() {
-//            cylinder(h = Z_LEN-BOARD_HEIGHT, r = CYLINDER_RADIUS + CYLINDER_THICKNESS);
-//            cylinder(h = Z_LEN-BOARD_HEIGHT, r = CYLINDER_RADIUS);
-//        }
-//    }
-//}
-
-// sensor peg
+// sensor peg and step
 translate([x_len_outer/2, y_len_outer/2 + Y_SENSOR_LEN/2 + Y_SENSOR_GAP + Y_SENSOR_DISPLACEMENT + Y_SENSOR_PEG_DISTANCE, BASE_THICKNESS])
 cylinder(h = Z_SENSOR_PEG_HEIGHT, r = SENSOR_PEG_RADIUS);
+translate([x_len_outer/2 - X_SENSOR_LEN/2 - X_SENSOR_GAP, y_len_outer/2 + Y_SENSOR_LEN/2 + Y_SENSOR_GAP + Y_SENSOR_DISPLACEMENT, BASE_THICKNESS])
+cube([X_SENSOR_LEN + 2*X_SENSOR_GAP, Y_SENSOR_STEP_LEN, Z_SENSOR_STEP_HEIGHT]);
+
+//------------------------------------------------
+// Size check
+// Draw a simulated version of 4 screws in the right 
+// positions, in order to validate the design.
+
+if (DEBUG_MODE == 1) {
+    screw1_x = WALL_THICKNESS + CYLINDER_GAP + CYLINDER_THICKNESS + CYLINDER_RADIUS;
+    screw1_y = WALL_THICKNESS + CYLINDER_GAP + CYLINDER_THICKNESS + CYLINDER_RADIUS;
+    color("red", 0.5)
+    translate([screw1_x, screw1_y, 0])
+    cylinder(h = Z_SCREW_LEN, r = SCREW_RADIUS);
+
+    screw2_x = WALL_THICKNESS + CYLINDER_GAP + CYLINDER_THICKNESS + CYLINDER_RADIUS;
+    screw2_y = WALL_THICKNESS + CYLINDER_GAP + CYLINDER_THICKNESS + CYLINDER_RADIUS + SCREW_DISTANCE_Y;
+    color("red", 0.5)
+    translate([screw2_x, screw2_y, 0])
+    cylinder(h = Z_SCREW_LEN, r = SCREW_RADIUS);
+
+    screw3_x = WALL_THICKNESS + CYLINDER_GAP + CYLINDER_THICKNESS + CYLINDER_RADIUS + SCREW_DISTANCE_X;
+    screw3_y = WALL_THICKNESS + CYLINDER_GAP + CYLINDER_THICKNESS + CYLINDER_RADIUS;
+    color("red", 0.5)
+    translate([screw3_x, screw3_y, 0])
+    cylinder(h = Z_SCREW_LEN, r = SCREW_RADIUS);
+
+    screw4_x = WALL_THICKNESS + CYLINDER_GAP + CYLINDER_THICKNESS + CYLINDER_RADIUS + SCREW_DISTANCE_X;
+    screw4_y = WALL_THICKNESS + CYLINDER_GAP + CYLINDER_THICKNESS + CYLINDER_RADIUS + SCREW_DISTANCE_Y;
+    color("red", 0.5)
+    translate([screw4_x, screw4_y, 0])
+    cylinder(h = Z_SCREW_LEN, r = SCREW_RADIUS);
+}
