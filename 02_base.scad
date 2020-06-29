@@ -42,15 +42,13 @@ CYLINDER_THICKNESS = 0.8;
 
 // For M3 screws it must be 1.5 mm + 5% tolerance
 CYLINDER_RADIUS = 1.575;
-CYLINDER_HEIGHT = 3;
+CYLINDER_HEIGHT = 4.75;
 
 // tolerances
 CYLINDER_GAP = 1.0;
 
 //------------------------------------------------
 // Board size
-BOARD_THICKNESS = 2.0;
-
 // Based on NodeMCU Amica ESP-8266 board.
 SCREW_DISTANCE_Y = 43.6;
 SCREW_DISTANCE_X = 20.9;

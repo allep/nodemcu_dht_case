@@ -52,7 +52,7 @@ CYLINDER_GAP = 1.0;
 //------------------------------------------------
 // Board size
 BOARD_THICKNESS = 2.0;
-BOARD_HEIGHT = 5; // including clearence
+BOARD_HEIGHT = 6.75; // including clearence
 
 // Based on NodeMCU Amica ESP-8266 board.
 SCREW_DISTANCE_Y = 43.6;
@@ -71,8 +71,8 @@ X_USB_PORT_LEN = 11;
 
 X_SENSOR_LEN = 15;
 Y_SENSOR_LEN = 20;
-X_SENSOR_GAP = 0.5;
-Y_SENSOR_GAP = 0.5;
+X_SENSOR_GAP = 0.25;
+Y_SENSOR_GAP = 0.25;
 
 // Used to keep track of the pins that need some
 // clearance to allow cables to be connected.
