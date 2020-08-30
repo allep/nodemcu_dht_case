@@ -4,6 +4,7 @@
 // author: Alessandro Paganelli 
 // e-mail: alessandro.paganelli@gmail.com
 // github: https://github.com/allep
+// license: GPL-3.0-or-later
 // 
 // Description
 // This case is designed to be used with a NodeMCU 
